@@ -33,7 +33,8 @@
         <div class="col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Server Status</h3>
+
+              <h3 class="panel-title"><span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Server Status</h3>
 
             </div>
             
@@ -74,7 +75,7 @@
         <div class="col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Minecraft
+              <h3 class="panel-title"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Minecraft
                 % if stats["online"] == "online":
                 <span class="label label-success pull-right">Online</span>
                 % elif stats["online"] == "offline":
@@ -90,15 +91,15 @@
             <ul class="list-group">
               <li class="list-group-item">
                 <form name="reply" id="replyForm" action="action" method = "POST">
-                  <div class="btn-group btn-group-justified" role="group" aria-label="">
+                  <div class="btn-group btn-group-lg btn-group-justified" role="group" aria-label="">
                     <div class="btn-group" role="group">
-                      <button id="ServerActionStart" type="submit" class="btn btn-default" value="start">Start</button>
+                      <button id="ServerActionStart" type="submit" class="btn btn-default" value="start"><span class="glyphicon glyphicon-play" aria-hidden="true"></span> Start</button>
                     </div>  
                     <div class="btn-group" role="group">
-                      <button id="ServerActionStop" type="submit" class="btn btn-default" value="stop">Stop</button>
+                      <button id="ServerActionStop" type="submit" class="btn btn-default" value="stop"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Stop</button>
                     </div>
                     <div class="btn-group" role="group">
-                      <button id="ServerActionKill" type="submit" class="btn btn-default" value="kill">Kill</button>
+                      <button id="ServerActionKill" type="submit" class="btn btn-default" value="kill"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> Kill</button>
                     </div>
                   </div>
                 </form>
@@ -111,6 +112,17 @@
 
               <li class="list-group-item">
                 <p><b>Latency:</b> {{stats["latency"]}}ms</p>
+              </li>
+
+              <li class="list-group-item">
+                <form name="reply" id="replyForm" action="action" method = "POST">
+                  <div class="input-group">
+                    <input id="CommandText" type="text" class="form-control" placeholder="Command...">
+                    <span class="input-group-btn">
+                      <button id="CommandBtn" class="btn btn-default" value="Command" type="submit"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+                    </span>
+                  </div>
+                </form>
               </li>
 
               % else:
@@ -128,7 +140,7 @@
         <div class="col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Log</h3>
+              <h3 class="panel-title"> <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Log</h3>
             </div>
           
 
@@ -174,6 +186,27 @@
             },
           });
         });
+
+        $('#CommandBtn').on('click', function(e){
+          e.preventDefault(); // preventing default click action
+
+          $.ajax({
+            url: '/action',
+            type: 'post',
+            data: JSON.stringify({action: "Command", 
+                command: $("#CommandText").val()}
+              ),
+            contentType: 'application/json;charset=UTF-8',
+            success: function (response) {
+              location.reload();
+              // ajax success callback
+            }, error: function (response) {
+              alert(response);
+              // ajax error callback
+            },
+          });
+        });
+
       });
     </script>
 
