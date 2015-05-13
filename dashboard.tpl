@@ -26,7 +26,7 @@
 
 
       <div class="page-header">
-        <h1>AMMD <small>another minimal Minecraft Dashboard</small></h1>
+        <h1><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> AMMD <small>another minimal Minecraft Dashboard</small></h1>
       </div>
 
       <div class="row">
@@ -99,7 +99,7 @@
                       <button id="ServerActionStop" type="submit" class="btn btn-default" value="stop"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Stop</button>
                     </div>
                     <div class="btn-group" role="group">
-                      <button id="ServerActionKill" type="submit" class="btn btn-default" value="kill"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> Kill</button>
+                      <button id="ServerActionKill" type="submit" class="btn btn-default" value="kill"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Kill</button>
                     </div>
                   </div>
                 </form>
