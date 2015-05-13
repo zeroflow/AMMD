@@ -42,11 +42,18 @@
             <ul class="list-group">
               <li class="list-group-item">
                 <p>CPU: {{stats["CPU"]}}%</p>
-                
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{stats["CPU"]}}%;">
+
+                <div class="row">
+                % for core in stats["CPU_cores"]:
+                  <div class="col-sm-3">
+                    <div height="10px" class="progress">
+                      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{core}}%;">
+                      </div>
+                    </div>
                   </div>
+                % end
                 </div>
+
               </li>
 
               <li class="list-group-item">
@@ -107,13 +114,25 @@
 
               % if stats["online"] == "online":
               <li class="list-group-item">
-                <p><b>Players online:</b> {{stats["players"]}}</p>
+                <p><b>Players online:</b> {{stats["numplayers"]}} / {{stats["maxplayers"]}}</p>
+                <p>
+                {{", ".join(stats["players"])}}
+                </p>
+              </li>
+
+              <li class="list-group-item">
+                <p><b>CPU:</b> {{stats["minecraft_CPU"]}}%</p>
+              </li>
+
+              <li class="list-group-item">
+                <p><b>RAM:</b> {{stats["minecraft_RAM"]}}B</p>
               </li>
 
               <li class="list-group-item">
                 <p><b>Latency:</b> {{stats["latency"]}}ms</p>
               </li>
 
+              % if stats["local_client"]:
               <li class="list-group-item">
                 <form name="reply" id="replyForm" action="action" method = "POST">
                   <div class="input-group">
@@ -124,6 +143,7 @@
                   </div>
                 </form>
               </li>
+              % end
 
               % else:
 

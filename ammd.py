@@ -58,12 +58,21 @@ def toSi(d, basis=1000):
 def sendCommand(cmd):
     None
 
+def getJavaProcess():
+    screenPid = subprocess.check_output("screen -list | grep FTB ", shell=True)
+    screenPid = int(re.search(r"^\t(\d+)\.", screenPid.decode("UTF-8")).group(1))
+
+    screenProcess = psutil.Process(screenPid)
+    
+    return screenProcess.children()[0]
+
 def getMCStats():
     global server_status
     global server_status_time
     global server
 
     try:
+        query = server.query()
         status = server.status()
     except (socket.gaierror, ConnectionRefusedError, BrokenPipeError):
         if server_status is not None:
@@ -71,13 +80,20 @@ def getMCStats():
         else:
             return {"online": "offline"}
 
-    resp = {
-        "online": "online",
-        "players": status.players.online,
-        "latency": status.latency,
-    }
+    javaProcess = getJavaProcess()
 
-    if server_status is not None:
+    javaMemory = javaProcess.memory_info().rss
+    javaMemory = toSi(javaMemory, 1024)
+    javaCPU = javaProcess.cpu_percent()
+
+    resp = query.raw
+    resp["online"] = "online"
+    resp["players"] = query.players.names
+    resp["latency"] = status.latency
+    resp["minecraft_RAM"] = javaMemory
+    resp["minecraft_CPU"] = javaCPU
+
+    if server_status == "stopping":
         print("Got newer status")
         resp["online"] = server_status
 
@@ -107,11 +123,20 @@ def index():
             server_status = None
 
     mc = getMCStats()
+
+    ip = request.remote_addr
+
+    if ip.startswith("127.0.0") or ip.startswith("192.168"):
+        local_client = True
+    else:
+        local_client = False
+
     server_stats = {
         "CPU": psutil.cpu_percent(percpu=False),
+        "CPU_cores": psutil.cpu_percent(percpu=True),
         "RAM": [
             psutil.virtual_memory().percent,
-            toSi(psutil.virtual_memory().used, 1024),
+            toSi(psutil.virtual_memory().total - psutil.virtual_memory().available, 1024),
             toSi(psutil.virtual_memory().total, 1024),
         ],
         "Disk": [
@@ -120,6 +145,7 @@ def index():
             toSi(psutil.disk_usage(PATH).free),
         ],
         "log":getLog(),
+        "local_client": local_client,
     }
 
     server_stats.update(mc)
@@ -143,7 +169,8 @@ def action():
         server_status_time = time.time()
         subprocess.call(CMDSTRING.format(cmd="/stop"), shell=True)
     elif action == "kill":
-        None
+        javaProcess = getJavaProcess()
+        javaProcess.kill()
     elif action == "Command":
         command = request.json["command"]
         subprocess.call(CMDSTRING.format(cmd=command), shell=True)
