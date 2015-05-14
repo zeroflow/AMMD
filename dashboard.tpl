@@ -6,11 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>AMMD - Another minimal Minecraft Dashboard</title>
-
+    <link rel="shortcut icon" href="/resources/favicon.png">
     <!-- Bootstrap -->
     <link href="resources/css/bootstrap.min.css" rel="stylesheet">
     <!-- Style -->
     <link href="resources/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- footer -->
+    <link href="resources/css/sticky-footer.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="resources/css/whhg.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -21,12 +25,11 @@
   </head>
   <body role="document">
 
-
     <div class="container theme-showcase" role="main">
 
 
       <div class="page-header">
-        <h1><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> AMMD <small>another minimal Minecraft Dashboard</small></h1>
+        <h1><img src="/resources/block.png" height="64" width="64"> AmMD <small>Another minimal Minecraft Dashboard</small></h1>
       </div>
 
       <div class="row">
@@ -34,14 +37,22 @@
           <div class="panel panel-default">
             <div class="panel-heading">
 
-              <h3 class="panel-title"><span class="glyphicon glyphicon-hdd" aria-hidden="true"></span> Server Status</h3>
+              <h3 class="panel-title"><i class="icon-server" style="vertical-align:middle"></i> Server Status</h3>
 
             </div>
             
 
             <ul class="list-group">
               <li class="list-group-item">
-                <p>CPU: {{stats["CPU"]}}%</p>
+
+                <div class="row">
+                  <div class="col-xs-6">
+                    <p><i class="icon-cpu-processor" style="vertical-align:middle"></i> {{stats["CPU"]}}%</p>
+                  </div>
+                  <div class="col-xs-6">
+                    <p class="text-right"><i class="icon-temperature-thermometer" style="vertical-align:middle"></i> {{stats["CPU_temperature"]}}°C</p>
+                  </div>
+                </div>  
 
                 <div class="row">
                 % for core in stats["CPU_cores"]:
@@ -54,10 +65,12 @@
                 % end
                 </div>
 
+
+
               </li>
 
               <li class="list-group-item">
-              <p>RAM: {{stats["RAM"][1]}}B / {{stats["RAM"][2]}}B</p>
+              <p><i class="icon-ram" style="vertical-align:middle"></i> {{stats["RAM"][1]}}B / {{stats["RAM"][2]}}B</p>
 
                 <div class="progress">
                   <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{stats["RAM"][0]}}%;">
@@ -67,7 +80,7 @@
               </li>
 
               <li class="list-group-item">
-              <p>SSD: {{stats["Disk"][1]}}B / {{stats["Disk"][2]}}B</p>
+              <p><i class="icon-hdd" style="vertical-align:middle"></i> {{stats["Disk"][1]}}B / {{stats["Disk"][2]}}B</p>
 
                 <div class="progress">
                   <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{stats["Disk"][0]}}%;">
@@ -82,7 +95,7 @@
         <div class="col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Minecraft
+              <h3 class="panel-title"><i class="icon-minecraft" style="vertical-align:middle"></i> Minecraft
                 % if stats["online"] == "online":
                 <span class="label label-success pull-right">Online</span>
                 % elif stats["online"] == "offline":
@@ -114,18 +127,27 @@
 
               % if stats["online"] == "online":
               <li class="list-group-item">
-                <p><b>Players online:</b> {{stats["numplayers"]}} / {{stats["maxplayers"]}}</p>
+                <p><i class="icon-user" style="vertical-align:middle"></i> {{stats["numplayers"]}} / {{stats["maxplayers"]}} online</p>
                 <p>
                 {{", ".join(stats["players"])}}
                 </p>
               </li>
 
               <li class="list-group-item">
-                <p><b>CPU:</b> {{stats["minecraft_CPU"]}}%</p>
-              </li>
+                <div class="row">
+                  <div class="col-xs-4">
+                    <p><i class="icon-cpu-processor" style="vertical-align:middle"></i> {{stats["minecraft_CPU"]}}%</p>
+                  </div>
 
-              <li class="list-group-item">
-                <p><b>RAM:</b> {{stats["minecraft_RAM"]}}B</p>
+                  <div class="col-xs-4">
+                    <p><i class="icon-ram" style="vertical-align:middle"></i>  {{stats["minecraft_RAM"]}}B</p>
+                  </div>
+
+                  <div class="col-xs-4">
+                    <p><i class="icon-hdd" style="vertical-align:middle"></i>  {{stats["minecraft_HDD"]}}B</p>
+                  </div>
+
+                </div>
               </li>
 
               <li class="list-group-item">
@@ -160,7 +182,7 @@
         <div class="col-sm-4">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title"> <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Log</h3>
+              <h3 class="panel-title"> <i class="icon-rawaccesslogs" style="vertical-align:middle"></i> Log</h3>
             </div>
           
 
@@ -177,6 +199,12 @@
 
       </div>
     </div>
+
+    <footer class="footer">
+      <div class="container theme-showcase container-footer">
+        <p class="text-muted text-right">AmMD by zeroflow // <a href="https://github.com/zeroflow/AMMD">github.com/zeroflow/AMMD</a></p>
+      </div>
+    </footer>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
