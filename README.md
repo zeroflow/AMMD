@@ -18,3 +18,4 @@ Requirements:
 * psutil (https://github.com/Dinnerbone/mcstatus)
 * bottle
 * twitter bootstrap
+* WebHostingHub Glyphs (http://www.webhostinghub.com/glyphs/)
