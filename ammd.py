@@ -1,6 +1,6 @@
 #!/opt/anaconda/envs/mcserver/bin/python
 
-from bottle import route, post, run, template, request, response, static_file, get
+from bottle import route, post, run, template, request, response, static_file, get, app, redirect
 import random
 from mcstatus import MinecraftServer
 import psutil
@@ -11,8 +11,18 @@ import os
 import time
 import subprocess
 import shlex
+from beaker.middleware import SessionMiddleware
+import hashlib
+from binascii import hexlify
 
-server = MinecraftServer("localhost", 25565)
+session_opts = {
+    'session.type': 'file',
+    'session.cookie_expires': False,
+    'session.data_dir': './data',
+    'session.auto': True
+}
+app_mw = SessionMiddleware(app(), session_opts)
+
 PATH = "/home/minecraft/Techno"
 LOGFILE = "logs/latest.log"
 LOGFILTER = (
@@ -73,7 +83,8 @@ def getJavaProcess():
 def getMCStats():
     global server_status
     global server_status_time
-    global server
+    
+    server = MinecraftServer("localhost", 25565)
 
     try:
         javaProcess = getJavaProcess()  
@@ -119,6 +130,45 @@ def getLog():
 def serve_static(filepath):
     return static_file(filepath, root = "resources")
 
+@route('/login')
+@post('/login')
+def login():
+    session = request.environ.get('beaker.session')
+
+    username = request.forms.get('inputUsername')
+    password = request.forms.get('inputPassword')
+
+    if username is None and password is None:
+        return template("login")
+    else:
+        password = hexlify(hashlib.sha1(password.encode("ASCII")).digest()).decode("ASCII")
+        print("LoginUser:", username)
+        print("LoginPassword:", password)
+        with open("users") as f:
+            for line in f.readlines():
+                match = re.search("^(.*?)//(.*?)$", line)
+                user = match.group(1)
+                pwd = match.group(2)
+
+                print(user, pwd)
+
+                if user.lower() == username.lower() and pwd.lower() == password.lower():
+                    session["username"] = username
+                    session["online"] = True
+                    break
+                else:
+                    session["online"] = False
+
+        redirect("/")
+
+@route('/logout')
+def logout():
+    session = request.environ.get('beaker.session')
+    session["username"] = None
+    session["password"] = None
+    session["online"] = None
+    redirect("/")
+
 @get('/favicon.ico')
 def get_favicon():
     return server_static('favicon.ico')
@@ -127,6 +177,8 @@ def get_favicon():
 def index():
     global server_status_time
     global server_status
+
+    session = request.environ.get('beaker.session')
 
     if server_status_time is not None:
         if time.time() - server_status_time > STATUS_TIMEOUT:
@@ -163,6 +215,8 @@ def index():
         ],
         "log":getLog(),
         "local_client": local_client,
+        "login": session.get("online"),
+        "username": session.get("username", None),
     }
 
     server_stats.update(mc)
@@ -197,4 +251,4 @@ def action():
     
     return(msg)
 
-run(host='', port=8080, debug = False)
+run(app=app_mw, host='', port=8080, debug = True)

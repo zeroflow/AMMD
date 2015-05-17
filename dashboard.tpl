@@ -29,7 +29,9 @@
 
 
       <div class="page-header">
-        <h1><img src="/resources/block.png" height="64" width="64"> AmMD <small>Another minimal Minecraft Dashboard</small></h1>
+        
+            <h1><img src="/resources/block.png" height="64" width="64"> AmMD <small>Another minimal Minecraft Dashboard</small></h1>
+        
       </div>
 
       <div class="row">
@@ -109,6 +111,8 @@
             </div>
 
             <ul class="list-group">
+
+              % if stats["login"]:
               <li class="list-group-item">
                 <form name="reply" id="replyForm" action="action" method = "POST">
                   <div class="btn-group btn-group-lg btn-group-justified" role="group" aria-label="">
@@ -124,6 +128,7 @@
                   </div>
                 </form>
               </li>
+              % end
 
               % if stats["online"] == "online":
               <li class="list-group-item">
@@ -154,7 +159,7 @@
                 <p><b>Latency:</b> {{stats["latency"]}}ms</p>
               </li>
 
-              % if stats["local_client"]:
+              % if stats["login"]:
               <li class="list-group-item">
                 <form name="reply" id="replyForm" action="action" method = "POST">
                   <div class="input-group">
@@ -202,7 +207,23 @@
 
     <footer class="footer">
       <div class="container theme-showcase container-footer">
-        <p class="text-muted text-right">AmMD by zeroflow // <a href="https://github.com/zeroflow/AMMD">github.com/zeroflow/AMMD</a></p>
+        <div class="row">
+
+          % if not stats["login"]:
+          <div class="col-sm-6">
+            <p class="text-muted text-left"><a href="/login">Login</a></p>
+          </div>
+          % else:
+          <div class="col-sm-6">
+            <p class="text-muted text-left"> {{stats["username"]}} // <a href="/logout">Logout</a></p>
+          </div>
+          % end
+
+          <div class="col-sm-6">
+            <p class="text-muted text-right">AmMD by zeroflow // <a href="https://github.com/zeroflow/AMMD">github.com/zeroflow/AMMD</a></p>
+          </div>
+
+        </div>
       </div>
     </footer>
 
